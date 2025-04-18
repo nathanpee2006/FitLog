@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
@@ -7,8 +8,6 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from .models import Workout, Exercise, WorkoutExercise, Set
 from .serializers import UserRegistrationSerializer, WorkoutSerializer, ExerciseSerializer, WorkoutExerciseSerializer, SetSerializer
 
-
-# TODO: Implement JWT auth
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     def post(self, request, *args, **kwargs):
@@ -44,7 +43,7 @@ class CustomTokenObtainPairView(TokenObtainPairView):
             return res
 
         except:
-            return Response({'success': False})
+            return Response({'success': False}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 class CustomTokenRefreshView(TokenRefreshView):
@@ -75,7 +74,7 @@ class CustomTokenRefreshView(TokenRefreshView):
             return res
 
         except: 
-            return Response({'refreshed': False}) 
+            return Response({'refreshed': False}, status=status.HTTP_401_UNAUTHORIZED) 
 
 
 @api_view(['POST'])
@@ -90,7 +89,7 @@ def logout(request):
             res.delete_cookie('refresh_token', path='/', samesite='None')
             return res
         except:
-            return Response({'success': False})
+            return Response({'success': False}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 @api_view(['POST'])
@@ -111,8 +110,8 @@ def register(request):
         serializer = UserRegistrationSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET', 'POST'])
@@ -124,6 +123,7 @@ def workout_list(request):
         workouts = Workout.objects.all()
         serializer = WorkoutSerializer(workouts, many=True)
         print(serializer.data)
+        print(request.user.id)
         return Response(serializer.data)
 
 
