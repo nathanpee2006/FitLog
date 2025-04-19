@@ -35,16 +35,19 @@ class WorkoutSerializer(serializers.ModelSerializer):
 class ExerciseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Exercise 
-        fields = '__all__'
-
-
-class WorkoutExerciseSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = WorkoutExercise 
-        fields = '__all__'
+        fields = ['name', 'muscle_group', 'equipment'] 
 
 
 class SetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Set 
-        fields = '__all__'
+        fields = ['set_number', 'reps', 'weight', 'duration']
+
+
+class WorkoutExerciseSerializer(serializers.ModelSerializer):
+    exercise = ExerciseSerializer(read_only=True) 
+    sets = SetSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = WorkoutExercise 
+        exclude = ['workout'] 

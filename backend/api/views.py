@@ -120,10 +120,19 @@ def workout_list(request):
 
     # List workouts
     if request.method == 'GET':
-        workouts = Workout.objects.all()
+        workouts = Workout.objects.filter(user_id=request.user.id)
         serializer = WorkoutSerializer(workouts, many=True)
-        print(serializer.data)
-        print(request.user.id)
         return Response(serializer.data)
 
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def workout_detail(request, workout_id):
+    
+    # Get workout details, including exercises, sets, reps and weight        
+    if request.method == 'GET':
+        workout_details = WorkoutExercise.objects.prefetch_related("sets").filter(workout_id=workout_id)
+        serializer = WorkoutExerciseSerializer(workout_details, many=True)
+        print(serializer.data)
+        return Response(serializer.data)
 
