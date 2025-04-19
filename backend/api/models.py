@@ -7,6 +7,9 @@ class Workout(models.Model):
     workout_type = models.CharField(max_length=100)
     date = models.DateField()
 
+    def __str__(self):
+        return f"{self.user}'s workout: {self.workout_type}"
+
 
 class Exercise(models.Model):
 
@@ -45,10 +48,16 @@ class Exercise(models.Model):
     muscle_group = models.CharField(max_length=16, choices=MUSCLE_GROUP)
     equipment = models.CharField(max_length=16, choices=EQUIPMENT_CHOICES, blank=True)
 
+    def __str__(self):
+        return f"{self.name}"
+
 
 class WorkoutExercise(models.Model):
     workout = models.ForeignKey(Workout, on_delete=models.CASCADE, related_name="workout_exercises")
     exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE, related_name="exercise_instances")
+
+    def __str__(self):
+        return f"{self.workout}: {self.exercise}"
 
 
 class Set(models.Model):
