@@ -99,6 +99,30 @@ export const getWorkoutDetail = async (workout_id) => {
 
 
 /**
+ * The function `deleteWorkout` sends a DELETE request to a specific workout endpoint and handles
+ * errors by refreshing the access token.
+ * @param workout_id - The `workout_id` parameter in the `deleteWorkout` function represents the unique
+ * identifier of the workout that you want to delete. This identifier is used to specify which workout
+ * should be deleted from the server when making the DELETE request to the API endpoint
+ * `workouts/${workout
+ * @returns The `deleteWorkout` function is returning the data from the response of the DELETE request
+ * made to `workouts//`.
+ */
+export const deleteWorkout = async (workout_id) => {
+    try {
+        const response = await axios.delete(`${BASE_URL}workouts/${workout_id}/`, {
+            withCredentials: true
+        })
+        return response.data
+    } catch (error) {
+        callRefresh(error, () => axios.delete(`${BASE_URL}workouts/${workout_id}/`, {
+            withCredentials: true
+        }))
+    }
+}
+
+
+/**
  * The code snippet contains functions for handling user authentication, registration, and refreshing
  * tokens in a JavaScript application.
  * @param error - The `error` parameter in the `callRefresh` function is used to capture any error that
@@ -191,3 +215,4 @@ export const register = async (username, email, password) => {
     )
     return response.data
 }
+
