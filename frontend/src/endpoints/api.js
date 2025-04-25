@@ -6,6 +6,7 @@ const LOGIN_URL = `${BASE_URL}token/`
 const LOGOUT_URL = `${BASE_URL}logout/`
 const REFRESH_URL = `${BASE_URL}token/refresh/`
 const WORKOUTS_URL = `${BASE_URL}workouts/`
+const EXERCISES_URL = `${BASE_URL}exercises/`
 const AUTH_URL = `${BASE_URL}authenticated/`
 const REGISTER_URL = `${BASE_URL}register/`
 
@@ -116,6 +117,28 @@ export const deleteWorkout = async (workout_id) => {
         return response.data
     } catch (error) {
         callRefresh(error, () => axios.delete(`${BASE_URL}workouts/${workout_id}/`, {
+            withCredentials: true
+        }))
+    }
+}
+
+
+/**
+ * This function retrieves exercises data from a specified URL using axios, handling errors by
+ * refreshing the data.
+ * @returns The `getExercises` function is returning the data from the response of the axios GET
+ * request to the `EXERCISES_URL`. If the request is successful, it returns the response data. If there
+ * is an error, it calls the `callRefresh` function with the error and retries the axios GET request to
+ * the `EXERCISES_URL` with credentials.
+ */
+export const getExercises = async () => {
+    try {
+        const response = await axios.get(EXERCISES_URL, {
+            withCredentials: true
+        })
+        return response.data
+    } catch (error) {
+        callRefresh(error, () => axios.get(EXERCISES_URL, {
             withCredentials: true
         }))
     }

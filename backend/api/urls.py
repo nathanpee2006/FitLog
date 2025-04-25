@@ -9,5 +9,6 @@ urlpatterns = [
     path('api/workouts/<int:workout_id>/', views.workout_detail),
     path('api/logout/', views.logout),
     path('api/authenticated/', views.is_authenticated),
-    path('api/register/', views.register)
+    path('api/register/', views.register),
+    path('api/exercises/', views.exercise_list)
 ]

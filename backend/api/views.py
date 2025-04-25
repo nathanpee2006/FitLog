@@ -125,7 +125,7 @@ def workout_list(request):
         return Response(serializer.data)
 
 
-@api_view(['GET'])
+@api_view(['GET', 'PUT', 'DELETE'])
 @permission_classes([IsAuthenticated])
 def workout_detail(request, workout_id):
     
@@ -133,6 +133,22 @@ def workout_detail(request, workout_id):
     if request.method == 'GET':
         workout_details = WorkoutExercise.objects.prefetch_related("sets").filter(workout_id=workout_id)
         serializer = WorkoutExerciseSerializer(workout_details, many=True)
-        print(serializer.data)
         return Response(serializer.data)
 
+
+    # Delete workout detail
+    if request.method == 'DELETE':
+        workout_details = Workout.objects.get(id=workout_id)
+        workout_details.delete()
+        return Response({'success': 'Workout deleted!'},status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def exercise_list(request):
+
+    # List all exercises
+    if request.method == 'GET':
+        exercises = Exercise.objects.all()
+        serializer = ExerciseSerializer(exercises, many=True)
+        return Response(serializer.data)
