@@ -29,13 +29,13 @@ class UserSerializer(serializers.ModelSerializer):
 class WorkoutSerializer(serializers.ModelSerializer):
     class Meta:
         model = Workout
-        fields = '__all__'
+        fields = ['id', 'workout_type', 'date']
 
 
 class ExerciseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Exercise 
-        fields = ['name', 'muscle_group', 'equipment'] 
+        fields = ['id', 'name', 'muscle_group', 'equipment'] 
 
 
 class SetSerializer(serializers.ModelSerializer):
@@ -51,3 +51,51 @@ class WorkoutExerciseSerializer(serializers.ModelSerializer):
     class Meta:
         model = WorkoutExercise 
         exclude = ['workout'] 
+
+
+class WorkoutCreateSerializer(serializers.ModelSerializer):
+    class WorkoutExerciseCreateSerializer(serializers.ModelSerializer):
+        class SetCreateSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = Set
+                fields = (
+                    'set_number', 
+                    'reps', 
+                    'weight',
+                )
+
+        sets = SetCreateSerializer(many=True)
+
+        class Meta:
+            model = WorkoutExercise
+            fields = ['exercise', 'sets']
+
+    exercises = WorkoutExerciseCreateSerializer(many=True)
+
+    def create(self, validated_data):
+        exercises_data = validated_data.pop('exercises')
+        workout = Workout.objects.create(**validated_data)
+
+        for exercise_data in exercises_data:
+            sets_data = exercise_data.pop('sets', [])
+            workout_exercise = WorkoutExercise.objects.create(workout=workout, exercise=exercise_data['exercise'])
+
+            for set_data in sets_data:
+                Set.objects.create(workout_exercise=workout_exercise, **set_data)
+
+        workout.exercises = workout.workoutexercise_set.all()  
+        return workout
+
+
+    class Meta:
+        model = Workout
+        fields = (
+            'user',
+            'workout_type',
+            'date',
+            'exercises',
+        )
+        
+
+
+ 

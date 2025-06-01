@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from .models import Workout, Exercise, WorkoutExercise, Set
-from .serializers import UserRegistrationSerializer, WorkoutSerializer, ExerciseSerializer, WorkoutExerciseSerializer, SetSerializer
+from .serializers import UserRegistrationSerializer, WorkoutSerializer, ExerciseSerializer, WorkoutExerciseSerializer, SetSerializer, WorkoutCreateSerializer
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
@@ -123,6 +123,16 @@ def workout_list(request):
         workouts = Workout.objects.filter(user_id=request.user.id)
         serializer = WorkoutSerializer(workouts, many=True)
         return Response(serializer.data)
+
+    # Create workouts
+    if request.method == 'POST':
+        data = request.data
+        data['user'] = request.user.id
+        serializer = WorkoutCreateSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save() 
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
 
 
 @api_view(['GET', 'PUT', 'DELETE'])

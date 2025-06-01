@@ -44,7 +44,7 @@ class Exercise(models.Model):
         ("PULLUP_BAR", "Pull-up Bar"),
     ]
 
-    name = models.CharField(max_length=32)
+    name = models.CharField(max_length=32, unique=True)
     muscle_group = models.CharField(max_length=16, choices=MUSCLE_GROUP)
     equipment = models.CharField(max_length=16, choices=EQUIPMENT_CHOICES, blank=True)
 
@@ -53,8 +53,8 @@ class Exercise(models.Model):
 
 
 class WorkoutExercise(models.Model):
-    workout = models.ForeignKey(Workout, on_delete=models.CASCADE, related_name="workout_exercises")
-    exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE, related_name="exercise_instances")
+    workout = models.ForeignKey(Workout, on_delete=models.CASCADE)
+    exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.workout}: {self.exercise}"

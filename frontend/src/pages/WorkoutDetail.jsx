@@ -18,11 +18,7 @@ import { getWorkoutDetail } from "../endpoints/api";
 export default function WorkoutDetail() {
   const [exercises, setExercises] = useState([]);
   const { id } = useParams();
-  console.log(id);
-  console.log(exercises);
 
-  // TODO: For each exercise show a table contains sets, previous, weight in kg, reps
-  // FIX: refresh token not refreshing the access token
   const workoutExercises = exercises.map((exercise) => (
     <Box key={exercise.id} m="5">
       <Heading>{exercise.exercise.name}</Heading>

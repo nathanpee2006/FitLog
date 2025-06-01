@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
-import { authenticated, login, register } from "../endpoints/api";
+import { authenticated, login, register, logout } from "../endpoints/api";
 
 const AuthContext = createContext();
 
@@ -9,6 +9,7 @@ export default function AuthProvider({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const getAuthenticated = async () => {
     try {
@@ -25,8 +26,14 @@ export default function AuthProvider({ children }) {
     const success = await login(username, password);
     if (success) {
       setIsAuthenticated(true);
-      navigate("/");
+      navigate("/workouts");
     }
+  };
+
+  const logoutUser = async () => {
+    await logout();
+    setIsAuthenticated(false);
+    navigate("/login");
   };
 
   const registerUser = async (username, email, password, confirmPassword) => {
@@ -38,13 +45,15 @@ export default function AuthProvider({ children }) {
     }
   };
 
+  // Everytime the url path changes, check if the user is authenticated (if they have a valid access token)
   useEffect(() => {
     getAuthenticated();
-  }, [window.location.pathname]);
+  }, [location.pathname]);
 
+  // Nested components in the AuthContext.Provider can have access to context values and functions by calling useAuth()
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, loading, loginUser, registerUser }}
+      value={{ isAuthenticated, loading, loginUser, logoutUser, registerUser }}
     >
       {children}
     </AuthContext.Provider>

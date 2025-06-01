@@ -83,7 +83,7 @@ export const getWorkouts = async () => {
  * want to retrieve details. It is used in the URL to specify which workout's details you are fetching
  * from the server.
  * @returns The `getWorkoutDetail` function is returning the data from the response of the API call
- * made to `workouts//`.
+ * made to `workouts/`.
  */
 export const getWorkoutDetail = async (workout_id) => {
     try {
@@ -96,6 +96,14 @@ export const getWorkoutDetail = async (workout_id) => {
             withCredentials: true
         }))
     }
+}
+
+
+export const createWorkoutDetail = async (formData) => {
+    const response = await axios.post(WORKOUTS_URL, formData, {
+        withCredentials: true
+    })
+    return response.data
 }
 
 
