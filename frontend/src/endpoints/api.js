@@ -99,11 +99,46 @@ export const getWorkoutDetail = async (workout_id) => {
 }
 
 
+/**
+ * The function `createWorkoutDetail` sends a POST request to a specified URL with form data and
+ * returns the response data.
+ * @param formData - The `formData` parameter in the `createWorkoutDetail` function is the data that
+ * will be sent in the POST request to the `WORKOUTS_URL`. This data typically includes information
+ * about the workout such as the exercises, sets, reps, and any other details related to the workout
+ * being created
+ * @returns The `createWorkoutDetail` function is returning the data from the response of the POST
+ * request made to the `WORKOUTS_URL` with the provided form data.
+ */
 export const createWorkoutDetail = async (formData) => {
     const response = await axios.post(WORKOUTS_URL, formData, {
         withCredentials: true
     })
     return response.data
+}
+
+
+/**
+ * The function `updateWorkout` sends a PUT request to update a workout with the provided ID using the
+ * given form data.
+ * @param workout_id - The `workout_id` parameter is the unique identifier of the workout that you want
+ * to update. It is used to specify which workout should be updated in the database.
+ * @param formData - The `formData` parameter in the `updateWorkout` function is the data that you want
+ * to update for a specific workout. This data will be sent in the request body when making a PUT
+ * request to update
+ * @returns The `updateWorkout` function returns the data from the response of the PUT request made to
+ * the specified workout endpoint.
+ */
+export const updateWorkout = async (workout_id, formData) => {
+    try {
+        const response = await axios.put(`${BASE_URL}workouts/${workout_id}/`, formData, {
+            withCredentials: true
+        })
+        return response.data
+    } catch (error) {
+        callRefresh(error, () => axios.put(`${BASE_URL}workouts/${workout_id}/`, formData, {
+            withCredentials: true
+        }))
+    }
 }
 
 
