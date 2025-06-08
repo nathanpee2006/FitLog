@@ -41,16 +41,17 @@ class ExerciseSerializer(serializers.ModelSerializer):
 class SetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Set 
-        fields = ['set_number', 'reps', 'weight', 'duration']
+        fields = ['set_number', 'reps', 'weight']
 
 
 class WorkoutExerciseSerializer(serializers.ModelSerializer):
+    workout = WorkoutSerializer(read_only=True)
     exercise = ExerciseSerializer(read_only=True) 
     sets = SetSerializer(many=True, read_only=True)
 
     class Meta:
         model = WorkoutExercise 
-        exclude = ['workout'] 
+        fields = '__all__'
 
 
 class WorkoutCreateSerializer(serializers.ModelSerializer):
@@ -71,6 +72,28 @@ class WorkoutCreateSerializer(serializers.ModelSerializer):
             fields = ['exercise', 'sets']
 
     exercises = WorkoutExerciseCreateSerializer(many=True)
+
+    def update(self, instance, validated_data):
+        exercises_data = validated_data.pop('exercises')
+        instance.workout_type = validated_data.get('workout_type', instance.workout_type)
+        instance.date = validated_data.get('date', instance.date)
+        instance.save()
+
+        if exercises_data is not None:
+
+            # Delete exercises in specified workout instance
+            instance.workoutexercise_set.all().delete()
+
+            # Recreate workout details
+            for exercise_data in exercises_data:
+                sets_data = exercise_data.pop('sets', [])
+                workout_exercise = WorkoutExercise.objects.create(workout=instance, exercise=exercise_data['exercise'])
+
+                for set_data in sets_data:
+                    Set.objects.create(workout_exercise=workout_exercise, **set_data)
+
+        instance.exercises = instance.workoutexercise_set.all()
+        return instance
 
     def create(self, validated_data):
         exercises_data = validated_data.pop('exercises')

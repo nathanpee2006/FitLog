@@ -2,14 +2,23 @@ import { useFieldArray } from "react-hook-form";
 import { useEffect } from "react";
 import { FormControl, Input, Tbody, Tr, Td, Button } from "@chakra-ui/react";
 
-export default function ExerciseSetField({ control, register, index }) {
+export default function ExerciseSetField({
+  control,
+  register,
+  index,
+  initialValues,
+}) {
   const { fields, replace, append, remove } = useFieldArray({
     control,
     name: `exercises.${index}.sets`,
   });
 
   useEffect(() => {
-    replace([{ set_number: "", weight: "", reps: "" }]);
+    if (initialValues && initialValues.length > 0) {
+      replace(initialValues);
+    } else {
+      replace([{ set_number: 1, weight: "", reps: "" }]);
+    }
   }, []);
 
   return (

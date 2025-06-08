@@ -145,12 +145,22 @@ def workout_detail(request, workout_id):
         serializer = WorkoutExerciseSerializer(workout_details, many=True)
         return Response(serializer.data)
 
+    # Update workout detail
+    if request.method == 'PUT':
+        data = request.data
+        data['user'] = request.user.id
+        instance = Workout.objects.get(id=workout_id)
+        serializer = WorkoutCreateSerializer(instance=instance, data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # Delete workout detail
     if request.method == 'DELETE':
         workout_details = Workout.objects.get(id=workout_id)
         workout_details.delete()
-        return Response({'success': 'Workout deleted!'},status=status.HTTP_204_NO_CONTENT)
+        return Response({'success': 'Workout deleted!'}, status=status.HTTP_204_NO_CONTENT)
 
 
 @api_view(['GET'])
