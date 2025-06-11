@@ -1,5 +1,6 @@
 import {
   Container,
+  Center,
   Heading,
   Text,
   Button,
@@ -10,6 +11,15 @@ import {
   CardFooter,
   CloseButton,
   HStack,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverHeader,
+  PopoverBody,
+  PopoverFooter,
+  PopoverArrow,
+  PopoverCloseButton,
+  ButtonGroup,
 } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -41,6 +51,7 @@ export default function Workouts() {
     <Card
       direction={{ base: "column", sm: "row" }}
       overflow="hidden"
+      backgroundColor="gray.100"
       variant="outline"
       key={workout.id}
     >
@@ -48,17 +59,44 @@ export default function Workouts() {
         <CardBody>
           <HStack>
             <Heading size="md">{workout.workout_type}</Heading>
-            <CloseButton
-              onClick={() => {
-                const deleteId = workout.id;
-                deleteWorkout(deleteId);
-                setWorkouts((prevWorkouts) =>
-                  prevWorkouts.filter((workout) => workout.id !== deleteId)
-                );
-              }}
-            />
+            <Popover placement="left-end">
+              <PopoverTrigger>
+                <CloseButton marginLeft={"22.5em"} />
+              </PopoverTrigger>
+              <PopoverContent width="25em" height="10em">
+                <PopoverArrow />
+                <PopoverCloseButton />
+                <PopoverHeader fontSize="1.25em" fontWeight="bold">
+                  Confirmation!
+                </PopoverHeader>
+                <PopoverBody>
+                  Are you sure you want to delete {workout.workout_type}?
+                </PopoverBody>
+                <PopoverFooter display="flex" justifyContent="flex-end">
+                  <ButtonGroup size="sm">
+                    <Button
+                      marginTop="0.75em"
+                      marginRight={"0.75em"}
+                      colorScheme="red"
+                      onClick={() => {
+                        const deleteId = workout.id;
+                        console.log(deleteId);
+                        deleteWorkout(deleteId);
+                        setWorkouts((prevWorkouts) =>
+                          prevWorkouts.filter(
+                            (workout) => workout.id !== deleteId
+                          )
+                        );
+                      }}
+                    >
+                      Delete
+                    </Button>
+                  </ButtonGroup>
+                </PopoverFooter>
+              </PopoverContent>
+            </Popover>
           </HStack>
-          <Text py="2">{workout.date}</Text>
+          <Text py="2">Scheduled at: {workout.date}</Text>
         </CardBody>
         <CardFooter>
           <Button
@@ -74,8 +112,12 @@ export default function Workouts() {
 
   return (
     <Container>
-      <Button onClick={() => handleCreateWorkout()}>+ Create Workout</Button>
-      <SimpleGrid spacing={4}>{workoutList}</SimpleGrid>
+      <Center>
+        <Button marginBlock={5} onClick={() => handleCreateWorkout()}>
+          + Create Workout
+        </Button>
+      </Center>
+      <SimpleGrid spacing={5}>{workoutList}</SimpleGrid>
     </Container>
   );
 }
