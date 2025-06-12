@@ -26,8 +26,8 @@ export default function WorkoutDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
 
+  console.log("Exercises below:");
   console.log(exercises);
-  console.log(exercises?.[0]?.workout?.workout_type);
 
   const form = useForm({
     defaultValues: {
@@ -42,7 +42,7 @@ export default function WorkoutDetail() {
       ],
     },
   });
-  const { register, handleSubmit, control, setValue } = form;
+  const { register, handleSubmit, control, setValue, getValues } = form;
 
   const viewWorkoutExercises = (
     <>
@@ -112,19 +112,13 @@ export default function WorkoutDetail() {
 
       <FormControl>
         <Input
-          className="create-workout-form-input"
           type="text"
           placeholder="Workout Type"
           {...register("workout_type")}
         />
       </FormControl>
       <FormControl>
-        <Input
-          className="create-workout-form-input"
-          type="date"
-          placeholder="Date"
-          {...register("date")}
-        />
+        <Input type="date" placeholder="Date" {...register("date")} />
       </FormControl>
 
       {exercises.map((exercise, index) => {
@@ -150,6 +144,7 @@ export default function WorkoutDetail() {
                   register={register}
                   index={index}
                   initialValues={exercise.sets}
+                  getValues={getValues}
                 />
               </Table>
             </TableContainer>

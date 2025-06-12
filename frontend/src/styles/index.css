@@ -3,12 +3,3 @@
 body {
     font-family: 'Inter', sans-serif;
 }
-
-.create-workout-form {
-    padding: 1.5em;
-}
-
-.create-workout-form-input {
-    width: 75%;
-    margin-bottom: 0.5em;
-}

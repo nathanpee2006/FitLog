@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Select } from "chakra-react-select";
 
 import {
+  Center,
   Box,
   Heading,
   Tag,
@@ -48,11 +49,12 @@ export default function CreateWorkout() {
       ],
     },
   });
-  const { register, handleSubmit, control, watch } = form;
+  const { register, handleSubmit, control, watch, getValues } = form;
 
   const exercisesSelected = watch("exercises");
   console.log(exercisesSelected);
 
+  // index represents exercises selected by the user (e.g. if Bicep Curls was first selected by the user, then it is at index 0...)
   const exerciseData = exercisesSelected.map((exercise, index) => {
     return (
       <Box key={exercise.label}>
@@ -71,6 +73,7 @@ export default function CreateWorkout() {
               control={control}
               register={register}
               index={index}
+              getValues={getValues}
             />
           </Table>
         </TableContainer>
@@ -107,24 +110,18 @@ export default function CreateWorkout() {
   }, []);
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="create-workout-form">
+    <form onSubmit={handleSubmit(onSubmit)}>
       {currentStep === 0 && (
         <>
           <FormControl>
             <Input
-              className="create-workout-form-input"
               type="text"
               placeholder="Workout Type"
               {...register("workout_type")}
             />
           </FormControl>
           <FormControl>
-            <Input
-              className="create-workout-form-input"
-              type="date"
-              placeholder="Date"
-              {...register("date")}
-            />
+            <Input type="date" placeholder="Date" {...register("date")} />
           </FormControl>
           <Button onClick={next}>Next</Button>
         </>
@@ -139,7 +136,6 @@ export default function CreateWorkout() {
                 <FormLabel>Exercises</FormLabel>
 
                 <Select
-                  className="create-workout-form-input"
                   isMulti
                   {...field}
                   placeholder="Select exercises"
@@ -152,16 +148,16 @@ export default function CreateWorkout() {
             )}
           />
           <ButtonGroup>
-            <Button onClick={next}>Next</Button>
             <Button onClick={back}>Back</Button>
+            <Button onClick={next}>Next</Button>
           </ButtonGroup>
         </>
       )}
       {currentStep === 2 && (
         <>
           {exerciseData}
-          <Button type="submit">Create</Button>
           <Button onClick={back}>Back</Button>
+          <Button type="submit">Create</Button>
         </>
       )}
     </form>

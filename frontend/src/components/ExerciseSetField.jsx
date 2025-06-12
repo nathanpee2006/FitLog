@@ -7,6 +7,7 @@ export default function ExerciseSetField({
   register,
   index,
   initialValues,
+  getValues,
 }) {
   const { fields, replace, append, remove } = useFieldArray({
     control,
@@ -65,7 +66,13 @@ export default function ExerciseSetField({
           <Td>
             <Button
               type="button"
-              onClick={() => append({ set_number: "", weight: "", reps: "" })}
+              onClick={() => {
+                append({
+                  set_number: fields.length + 1,
+                  weight: getValues(`exercises.${index}.sets.0.weight`),
+                  reps: getValues(`exercises.${index}.sets.0.reps`),
+                });
+              }}
             >
               + Add Set
             </Button>
