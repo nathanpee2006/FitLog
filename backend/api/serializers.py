@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
+from django.db import transaction
 
 from .models import Workout, Exercise, WorkoutExercise, Set
 
@@ -75,38 +76,46 @@ class WorkoutCreateSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         exercises_data = validated_data.pop('exercises')
-        instance.workout_type = validated_data.get('workout_type', instance.workout_type)
-        instance.date = validated_data.get('date', instance.date)
-        instance.save()
 
-        if exercises_data is not None:
+        with transaction.atomic():
+            instance.workout_type = validated_data.get('workout_type', instance.workout_type)
+            instance.date = validated_data.get('date', instance.date)
+            instance.save()
 
-            # Delete exercises in specified workout instance
-            instance.workoutexercise_set.all().delete()
+            if exercises_data is not None:
 
-            # Recreate workout details
-            for exercise_data in exercises_data:
-                sets_data = exercise_data.pop('sets', [])
-                workout_exercise = WorkoutExercise.objects.create(workout=instance, exercise=exercise_data['exercise'])
+                # Delete exercises and sets in specified workout instance
+                instance.workoutexercise_set.all().delete()
 
-                for set_data in sets_data:
-                    Set.objects.create(workout_exercise=workout_exercise, **set_data)
+                # Recreate workout details
+                for exercise_data in exercises_data:
+                    sets_data = exercise_data.pop('sets', [])
+                    workout_exercise = WorkoutExercise.objects.create(workout=instance, exercise=exercise_data['exercise'])
 
-        instance.exercises = instance.workoutexercise_set.all()
+                    for set_data in sets_data:
+                        Set.objects.create(workout_exercise=workout_exercise, **set_data)
+
+            instance.exercises = instance.workoutexercise_set.all()
         return instance
 
     def create(self, validated_data):
         exercises_data = validated_data.pop('exercises')
-        workout = Workout.objects.create(**validated_data)
 
-        for exercise_data in exercises_data:
-            sets_data = exercise_data.pop('sets', [])
-            workout_exercise = WorkoutExercise.objects.create(workout=workout, exercise=exercise_data['exercise'])
+        with transaction.atomic():
 
-            for set_data in sets_data:
-                Set.objects.create(workout_exercise=workout_exercise, **set_data)
+            # Create workout instance
+            workout = Workout.objects.create(**validated_data)
 
-        workout.exercises = workout.workoutexercise_set.all()  
+            # Create workout exercises
+            for exercise_data in exercises_data:
+                sets_data = exercise_data.pop('sets', [])
+                workout_exercise = WorkoutExercise.objects.create(workout=workout, exercise=exercise_data['exercise'])
+
+                # Create workout sets
+                for set_data in sets_data:
+                    Set.objects.create(workout_exercise=workout_exercise, **set_data)
+
+            workout.exercises = workout.workoutexercise_set.all()  
         return workout
 
 
