@@ -12,6 +12,8 @@ import {
   Td,
   TableContainer,
   Button,
+  Checkbox,
+  Progress,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -23,11 +25,20 @@ import { getWorkoutDetail, updateWorkout } from "../endpoints/api";
 export default function WorkoutDetail() {
   const [isEditing, setIsEditing] = useState(false);
   const [exercises, setExercises] = useState([]);
+  const [completedSets, setCompletedSets] = useState(new Set());
+  const [progressValue, setProgressValue] = useState(0);
   const { id } = useParams();
   const navigate = useNavigate();
 
-  console.log("Exercises below:");
   console.log(exercises);
+  console.log(completedSets);
+  console.log(progressValue);
+
+  const setCount = exercises.reduce(
+    (total, exercise) => total + exercise.sets.length,
+    0
+  );
+  const progressIncrementPerSet = 100 / setCount;
 
   const form = useForm({
     defaultValues: {
@@ -46,6 +57,7 @@ export default function WorkoutDetail() {
 
   const viewWorkoutExercises = (
     <>
+      <Progress value={progressValue} />
       <Button
         onClick={() => {
           setValue("workout_type", exercises?.[0]?.workout?.workout_type);
@@ -74,13 +86,40 @@ export default function WorkoutDetail() {
               </Thead>
               <Tbody>
                 {exercise.sets.map((set) => (
-                  <Tr key={set.set_number}>
+                  <Tr
+                    key={set.id}
+                    backgroundColor={
+                      completedSets.has(set.id) ? "green.100" : ""
+                    }
+                  >
                     <Td>{set.set_number}</Td>
                     <Td>
                       {set.weight}kg x {set.reps}
                     </Td>
                     <Td isNumeric>{set.weight}</Td>
                     <Td isNumeric>{set.reps}</Td>
+                    <Td width="1em">
+                      <Checkbox
+                        colorScheme="green"
+                        isChecked={completedSets.has(set.id)}
+                        onChange={(e) => {
+                          setCompletedSets((prev) => {
+                            const newSet = new Set(prev);
+                            if (e.target.checked) {
+                              newSet.add(set.id);
+                            } else {
+                              newSet.delete(set.id);
+                            }
+                            return newSet;
+                          });
+                          setProgressValue((prevProgressValue) =>
+                            e.target.checked
+                              ? prevProgressValue + progressIncrementPerSet
+                              : prevProgressValue - progressIncrementPerSet
+                          );
+                        }}
+                      />
+                    </Td>
                   </Tr>
                 ))}
               </Tbody>
@@ -160,7 +199,7 @@ export default function WorkoutDetail() {
       setExercises(exercises);
     };
     fetchWorkout();
-  }, []);
+  }, [id]);
 
   return <>{isEditing ? editWorkoutExercises : viewWorkoutExercises}</>;
 }
