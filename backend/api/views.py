@@ -4,6 +4,8 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from django.views.decorators.cache import cache_page
+from django.views.decorators.vary import vary_on_cookie
 
 from .models import Workout, Exercise, WorkoutExercise, Set
 from .serializers import UserRegistrationSerializer, WorkoutSerializer, ExerciseSerializer, WorkoutExerciseSerializer, SetSerializer, WorkoutCreateSerializer
@@ -163,6 +165,8 @@ def workout_detail(request, workout_id):
         return Response({'success': 'Workout deleted!'}, status=status.HTTP_204_NO_CONTENT)
 
 
+@cache_page(60 * 15)
+@vary_on_cookie
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def exercise_list(request):

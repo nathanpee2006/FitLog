@@ -28,7 +28,6 @@ import { getWorkouts, deleteWorkout } from "../endpoints/api";
 
 export default function Workouts() {
   const [workouts, setWorkouts] = useState([]);
-  console.log(workouts);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -80,7 +79,6 @@ export default function Workouts() {
                       colorScheme="red"
                       onClick={() => {
                         const deleteId = workout.id;
-                        console.log(deleteId);
                         deleteWorkout(deleteId);
                         setWorkouts((prevWorkouts) =>
                           prevWorkouts.filter(

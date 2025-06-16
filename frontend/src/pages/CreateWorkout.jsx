@@ -99,7 +99,6 @@ export default function CreateWorkout() {
   useEffect(() => {
     const fetchExercises = async () => {
       const exercises = await getExercises();
-      console.log(exercises);
       const exerciseOptions = exercises.map((exercise) => ({
         label: exercise.name,
         value: exercise.id,
