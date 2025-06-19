@@ -3,3 +3,16 @@
 body {
     font-family: 'Inter', sans-serif;
 }
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 25%;
+    gap: 1em;
+    background-color: rgb(226, 232, 240);
+    padding: 4em;
+    margin: 5em auto;
+    border-radius: 2em;
+}
