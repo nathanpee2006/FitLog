@@ -56,7 +56,11 @@ export default function ExerciseSetField({
               </FormControl>
             </Td>
             <Td>
-              <Button type="button" onClick={() => remove(setIndex)}>
+              <Button
+                backgroundColor="red.200"
+                type="button"
+                onClick={() => remove(setIndex)}
+              >
                 Remove
               </Button>
             </Td>

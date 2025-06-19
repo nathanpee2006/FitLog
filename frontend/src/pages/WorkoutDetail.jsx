@@ -14,6 +14,7 @@ import {
   Button,
   Checkbox,
   Progress,
+  ButtonGroup,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -29,10 +30,6 @@ export default function WorkoutDetail() {
   const [progressValue, setProgressValue] = useState(0);
   const { id } = useParams();
   const navigate = useNavigate();
-
-  console.log(exercises);
-  console.log(completedSets);
-  console.log(progressValue);
 
   const setCount = exercises.reduce(
     (total, exercise) => total + exercise.sets.length,
@@ -59,6 +56,10 @@ export default function WorkoutDetail() {
     <>
       <Progress value={progressValue} />
       <Button
+        marginTop="2em"
+        marginLeft="2em"
+        backgroundColor="blue.500"
+        color="white"
         onClick={() => {
           setValue("workout_type", exercises?.[0]?.workout?.workout_type);
           setValue("date", exercises?.[0]?.workout?.date);
@@ -68,7 +69,13 @@ export default function WorkoutDetail() {
         Edit
       </Button>
       {exercises.map((exercise) => (
-        <Box key={exercise.id} m="5">
+        <Box
+          key={exercise.id}
+          marginTop="1em"
+          marginLeft="5em"
+          marginRight="5em"
+          marginBottom="2em"
+        >
           <Heading>{exercise.exercise.name}</Heading>
           <Tag>{exercise.exercise.muscle_group}</Tag>
           {exercise.exercise.equipment && (
@@ -146,23 +153,37 @@ export default function WorkoutDetail() {
 
   const editWorkoutExercises = (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <Button type="submit">Save</Button>
-      <Button onClick={() => setIsEditing(false)}>Cancel</Button>
+      <ButtonGroup margin="2em" spacing="3">
+        <Button backgroundColor="green.200" type="submit">
+          Save
+        </Button>
+        <Button backgroundColor="red.200" onClick={() => setIsEditing(false)}>
+          Cancel
+        </Button>
+      </ButtonGroup>
 
-      <FormControl>
-        <Input
-          type="text"
-          placeholder="Workout Type"
-          {...register("workout_type")}
-        />
-      </FormControl>
-      <FormControl>
-        <Input type="date" placeholder="Date" {...register("date")} />
-      </FormControl>
+      <Box margin="2em 40em 2em 40em">
+        <FormControl>
+          <Input
+            type="text"
+            placeholder="Workout Type"
+            {...register("workout_type")}
+          />
+        </FormControl>
+        <FormControl>
+          <Input type="date" placeholder="Date" {...register("date")} />
+        </FormControl>
+      </Box>
 
       {exercises.map((exercise, index) => {
         return (
-          <Box key={exercise.id}>
+          <Box
+            key={exercise.id}
+            marginTop="1em"
+            marginLeft="5em"
+            marginRight="5em"
+            marginBottom="2em"
+          >
             <Heading>{exercise.exercise.name}</Heading>
             <Tag>{exercise.exercise.muscle_group}</Tag>
             {exercise.exercise.equipment && (

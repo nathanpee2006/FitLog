@@ -26,7 +26,7 @@ export default function Register() {
   }
 
   return (
-    <Center marginBlock="250px">
+    <Center marginBlock="200px">
       <VStack width="480px" spacing="5px">
         <Heading>Register</Heading>
         <FormControl>

@@ -101,6 +101,7 @@ def is_authenticated(request):
     # Check if user is authenticated 
     if request.method == 'POST':
         return Response({'authenticated': True})
+    return Response({'authenticated': False}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 @api_view(['POST'])
@@ -165,8 +166,8 @@ def workout_detail(request, workout_id):
         return Response({'success': 'Workout deleted!'}, status=status.HTTP_204_NO_CONTENT)
 
 
-@cache_page(60 * 15)
-@vary_on_cookie
+# @cache_page(60 * 15)
+# @vary_on_cookie
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def exercise_list(request):

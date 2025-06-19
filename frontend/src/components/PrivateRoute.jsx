@@ -16,15 +16,9 @@ export default function PrivateRoute({ children }) {
     );
   }
 
-  // FIXME:
-  // When access token is expired, a 401 status code is received and the callRefresh function is ran
-  // But before the access token is refreshed and state is updated, isAuthenticated may briefly be false or unset.
-  // the page renders during this moment, but the data isn’t there (undefined), causing .map() to break or render nothing.
   if (isAuthenticated) {
     return children;
-  } else if (!isAuthenticated && true) {
-    return children;
-  } else {
+  } else if (!isAuthenticated && !loading) {
     navigate("/login");
   }
 }

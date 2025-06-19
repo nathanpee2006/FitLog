@@ -22,13 +22,15 @@ import {
   ButtonGroup,
 } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 import { getWorkouts, deleteWorkout } from "../endpoints/api";
 
 export default function Workouts() {
   const [workouts, setWorkouts] = useState([]);
   const navigate = useNavigate();
+  const location = useLocation();
+  console.log(location);
 
   useEffect(() => {
     const fetchWorkouts = async () => {
@@ -36,7 +38,7 @@ export default function Workouts() {
       setWorkouts(workouts);
     };
     fetchWorkouts();
-  }, []);
+  }, [location]);
 
   function viewWorkoutDetail(workout_id) {
     navigate(`/workouts/${workout_id}`);

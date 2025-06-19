@@ -1,7 +1,13 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
-import { authenticated, login, register, logout } from "../endpoints/api";
+import {
+  authenticated,
+  login,
+  register,
+  logout,
+  refreshToken,
+} from "../endpoints/api";
 
 const AuthContext = createContext();
 
@@ -11,12 +17,36 @@ export default function AuthProvider({ children }) {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Check if user is authenticated with valid access token
   const getAuthenticated = async () => {
     try {
+      // if no 401 error, authenticate user
       const success = await authenticated();
       setIsAuthenticated(success);
-    } catch {
-      setIsAuthenticated(false);
+    } catch (error) {
+      // if 401 error, refresh access token
+      if (error.response && error.response.status === 401) {
+        try {
+          const refreshed = await refreshToken();
+          if (refreshed) {
+            // authenticate user again
+            const retrySuccess = await authenticated();
+            setIsAuthenticated(retrySuccess);
+          } else {
+            // if refresh unsuccessful, unauthenticate
+            setIsAuthenticated(false);
+          }
+        } catch {
+          setIsAuthenticated(false);
+        }
+      } else {
+        // Handle other errors not related to 401
+        console.error(
+          "Auth: Non-401 error during initial authentication:",
+          error
+        );
+        setIsAuthenticated(false);
+      }
     } finally {
       setLoading(false);
     }

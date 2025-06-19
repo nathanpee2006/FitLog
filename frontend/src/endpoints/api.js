@@ -69,7 +69,7 @@ export const getWorkouts = async () => {
         })
         return response.data
     } catch (error) {
-        callRefresh(error, () => axios.get(WORKOUTS_URL, {
+        return callRefresh(error, () => axios.get(WORKOUTS_URL, {
             withCredentials: true
         }))
     }
@@ -92,7 +92,7 @@ export const getWorkoutDetail = async (workout_id) => {
         })
         return response.data
     } catch (error) {
-        callRefresh(error, () => axios.get(`${BASE_URL}workouts/${workout_id}/`, {
+        return callRefresh(error, () => axios.get(`${BASE_URL}workouts/${workout_id}/`, {
             withCredentials: true
         }))
     }
@@ -135,7 +135,7 @@ export const updateWorkout = async (workout_id, formData) => {
         })
         return response.data
     } catch (error) {
-        callRefresh(error, () => axios.put(`${BASE_URL}workouts/${workout_id}/`, formData, {
+        return callRefresh(error, () => axios.put(`${BASE_URL}workouts/${workout_id}/`, formData, {
             withCredentials: true
         }))
     }
@@ -159,7 +159,7 @@ export const deleteWorkout = async (workout_id) => {
         })
         return response.data
     } catch (error) {
-        callRefresh(error, () => axios.delete(`${BASE_URL}workouts/${workout_id}/`, {
+        return callRefresh(error, () => axios.delete(`${BASE_URL}workouts/${workout_id}/`, {
             withCredentials: true
         }))
     }
@@ -181,7 +181,7 @@ export const getExercises = async () => {
         })
         return response.data
     } catch (error) {
-        callRefresh(error, () => axios.get(EXERCISES_URL, {
+        return callRefresh(error, () => axios.get(EXERCISES_URL, {
             withCredentials: true
         }))
     }
@@ -240,7 +240,7 @@ export const logout = async () => {
  * @returns The `authenticated` function is returning a boolean value. If the authentication request is
  * successful and the response contains a `authenticated` property, it will return the value of
  * `response.data.authenticated`. If there is an error during the request, it will log the error and
- * return `false`.
+ * re-throw it.
  */
 export const authenticated = async () => {
     try {
@@ -250,8 +250,8 @@ export const authenticated = async () => {
         )
         return response.data.authenticated
     } catch (error) {
-        console.log(error)
-        return false
+        console.log("Error in api.js authenticated():", error.response ? error.response.status : error.message);
+        throw error;
     }
 }
 
@@ -281,4 +281,3 @@ export const register = async (username, email, password) => {
     )
     return response.data
 }
-
