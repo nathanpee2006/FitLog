@@ -73,6 +73,7 @@ export default function AuthProvider({ children }) {
     } else {
       alert("Passwords do not match.");
     }
+    navigate("/login");
   };
 
   // Everytime the url path changes, check if the user is authenticated (if they have a valid access token)
