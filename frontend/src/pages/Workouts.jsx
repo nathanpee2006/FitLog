@@ -30,7 +30,6 @@ export default function Workouts() {
   const [workouts, setWorkouts] = useState([]);
   const navigate = useNavigate();
   const location = useLocation();
-  console.log(location);
 
   useEffect(() => {
     const fetchWorkouts = async () => {
@@ -103,7 +102,7 @@ export default function Workouts() {
             colorScheme="blue"
             onClick={() => viewWorkoutDetail(workout.id)}
           >
-            Start Workout
+            View Workout
           </Button>
         </CardFooter>
       </Stack>

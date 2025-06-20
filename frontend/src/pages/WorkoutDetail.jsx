@@ -15,10 +15,13 @@ import {
   Checkbox,
   Progress,
   ButtonGroup,
+  Flex,
+  Spacer,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useForm } from "react-hook-form";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import Stopwatch from "../components/Stopwatch";
 import ExerciseSetField from "../components/ExerciseSetField";
 
 import { getWorkoutDetail, updateWorkout } from "../endpoints/api";
@@ -28,8 +31,11 @@ export default function WorkoutDetail() {
   const [exercises, setExercises] = useState([]);
   const [completedSets, setCompletedSets] = useState(new Set());
   const [progressValue, setProgressValue] = useState(0);
+  const [isRunning, setIsRunning] = useState(false);
+  const [elapsedTime, setElapsedTime] = useState(0);
+  const intervalIdRef = useRef(null);
+  const startTimeRef = useRef(0);
   const { id } = useParams();
-  const navigate = useNavigate();
 
   const setCount = exercises.reduce(
     (total, exercise) => total + exercise.sets.length,
@@ -52,22 +58,75 @@ export default function WorkoutDetail() {
   });
   const { register, handleSubmit, control, setValue, getValues } = form;
 
+  function start() {
+    setIsRunning(true);
+    startTimeRef.current = Date.now() - elapsedTime;
+  }
+
+  function stop() {
+    setIsRunning(false);
+  }
+
+  function reset() {
+    setElapsedTime(0);
+    setIsRunning(false);
+  }
+
+  function formatTime() {
+    let hours = Math.floor(elapsedTime / (1000 * 60 * 60));
+    let minutes = Math.floor((elapsedTime / (1000 * 60)) % 60);
+    let seconds = Math.floor((elapsedTime / 1000) % 60);
+    let milliseconds = Math.floor((elapsedTime % 1000) / 10);
+
+    hours = String(hours).padStart(2, "0");
+    minutes = String(minutes).padStart(2, "0");
+    seconds = String(seconds).padStart(2, "0");
+    milliseconds = String(milliseconds).padStart(2, "0");
+
+    return `${minutes}:${seconds}:${milliseconds}`;
+  }
+
+  useEffect(() => {
+    if (isRunning) {
+      intervalIdRef.current = setInterval(() => {
+        setElapsedTime(Date.now() - startTimeRef.current);
+      }, 10);
+    }
+
+    return () => {
+      clearInterval(intervalIdRef.current);
+    };
+  }, [isRunning]);
+
   const viewWorkoutExercises = (
     <>
       <Progress value={progressValue} />
-      <Button
-        marginTop="2em"
-        marginLeft="2em"
-        backgroundColor="blue.500"
-        color="white"
-        onClick={() => {
-          setValue("workout_type", exercises?.[0]?.workout?.workout_type);
-          setValue("date", exercises?.[0]?.workout?.date);
-          setIsEditing(true);
-        }}
-      >
-        Edit
-      </Button>
+      <Flex>
+        <Button
+          marginTop="2em"
+          marginLeft="2em"
+          backgroundColor="blue.500"
+          color="white"
+          onClick={() => {
+            setValue("workout_type", exercises?.[0]?.workout?.workout_type);
+            setValue("date", exercises?.[0]?.workout?.date);
+            setIsEditing(true);
+          }}
+        >
+          Edit
+        </Button>
+        <Spacer />
+        <Stopwatch
+          isRunning={isRunning}
+          start={start}
+          stop={stop}
+          reset={reset}
+          formatTime={formatTime}
+          startTimeRef={startTimeRef}
+          intervalIdRef={intervalIdRef}
+        />
+      </Flex>
+
       {exercises.map((exercise) => (
         <Box
           key={exercise.id}
@@ -137,7 +196,7 @@ export default function WorkoutDetail() {
     </>
   );
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     const workoutId = id;
     const formattedExercisesArray = data.exercises.map((exercise, index) => {
       return {
@@ -147,8 +206,8 @@ export default function WorkoutDetail() {
       };
     });
     data.exercises = formattedExercisesArray;
-    updateWorkout(workoutId, data);
-    navigate("/workouts");
+    await updateWorkout(workoutId, data);
+    setIsEditing(false);
   };
 
   const editWorkoutExercises = (
@@ -219,8 +278,10 @@ export default function WorkoutDetail() {
       const exercises = await getWorkoutDetail(id);
       setExercises(exercises);
     };
-    fetchWorkout();
-  }, [id]);
+    if (!isEditing) {
+      fetchWorkout();
+    }
+  }, [id, isEditing]);
 
   return <>{isEditing ? editWorkoutExercises : viewWorkoutExercises}</>;
 }
