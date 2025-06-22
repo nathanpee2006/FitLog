@@ -9,20 +9,11 @@ import {
   Stack,
   CardBody,
   CardFooter,
-  CloseButton,
   HStack,
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  PopoverHeader,
-  PopoverBody,
-  PopoverFooter,
-  PopoverArrow,
-  PopoverCloseButton,
-  ButtonGroup,
 } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import DeleteWorkoutButton from "../components/DeleteWorkoutButton";
 
 import { getWorkouts, deleteWorkout } from "../endpoints/api";
 
@@ -47,6 +38,14 @@ export default function Workouts() {
     navigate("/workouts/create");
   }
 
+  function handleDeleteWorkout(workout_id) {
+    const deleteId = workout_id;
+    deleteWorkout(deleteId);
+    setWorkouts((prevWorkouts) =>
+      prevWorkouts.filter((workout) => workout.id !== deleteId)
+    );
+  }
+
   const workoutList = workouts.map((workout) => (
     <Card
       direction={{ base: "column", sm: "row" }}
@@ -57,43 +56,18 @@ export default function Workouts() {
     >
       <Stack>
         <CardBody>
-          <HStack>
+          <HStack
+            justify="space-between"
+            width="100%"
+            spacing="4"
+            flexDirection={{ base: "column", md: "row" }}
+            alignItems={{ base: "flex-start", md: "center" }}
+          >
             <Heading size="md">{workout.workout_type}</Heading>
-            <Popover placement="left-end">
-              <PopoverTrigger>
-                <CloseButton marginLeft={"22.5em"} />
-              </PopoverTrigger>
-              <PopoverContent width="25em" height="10em">
-                <PopoverArrow />
-                <PopoverCloseButton />
-                <PopoverHeader fontSize="1.25em" fontWeight="bold">
-                  Confirmation!
-                </PopoverHeader>
-                <PopoverBody>
-                  Are you sure you want to delete {workout.workout_type}?
-                </PopoverBody>
-                <PopoverFooter display="flex" justifyContent="flex-end">
-                  <ButtonGroup size="sm">
-                    <Button
-                      marginTop="0.75em"
-                      marginRight={"0.75em"}
-                      colorScheme="red"
-                      onClick={() => {
-                        const deleteId = workout.id;
-                        deleteWorkout(deleteId);
-                        setWorkouts((prevWorkouts) =>
-                          prevWorkouts.filter(
-                            (workout) => workout.id !== deleteId
-                          )
-                        );
-                      }}
-                    >
-                      Delete
-                    </Button>
-                  </ButtonGroup>
-                </PopoverFooter>
-              </PopoverContent>
-            </Popover>
+            <DeleteWorkoutButton
+              workoutType={workout.workout_type}
+              handleDelete={() => handleDeleteWorkout(workout.id)}
+            />
           </HStack>
           <Text py="2">Scheduled at: {workout.date}</Text>
         </CardBody>
