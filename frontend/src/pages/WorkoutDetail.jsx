@@ -159,9 +159,7 @@ export default function WorkoutDetail() {
                     }
                   >
                     <Td>{set.set_number}</Td>
-                    <Td>
-                      {set.weight}kg x {set.reps}
-                    </Td>
+                    <Td>None</Td>
                     <Td isNumeric>{set.weight}</Td>
                     <Td isNumeric>{set.reps}</Td>
                     <Td width="1em">

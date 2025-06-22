@@ -56,7 +56,7 @@ export default function Login() {
       </FormControl>
       <Button type="submit" colorScheme="blue">
         {isLoading && <Spinner />}
-        {isLoading ? "Loggin in..." : "Login"}
+        {isLoading ? "Logging in..." : "Login"}
       </Button>
       <Text>
         No account?{" "}

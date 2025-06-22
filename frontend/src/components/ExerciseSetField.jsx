@@ -32,7 +32,8 @@ export default function ExerciseSetField({
                 <Input
                   type="number"
                   {...register(
-                    `exercises.${index}.sets.${setIndex}.set_number`
+                    `exercises.${index}.sets.${setIndex}.set_number`,
+                    { disabled: true }
                   )}
                 />
               </FormControl>
@@ -43,7 +44,9 @@ export default function ExerciseSetField({
                 <Input
                   type="number"
                   step="0.01"
-                  {...register(`exercises.${index}.sets.${setIndex}.weight`)}
+                  {...register(`exercises.${index}.sets.${setIndex}.weight`, {
+                    required: true,
+                  })}
                 />
               </FormControl>
             </Td>
@@ -51,7 +54,9 @@ export default function ExerciseSetField({
               <FormControl>
                 <Input
                   type="number"
-                  {...register(`exercises.${index}.sets.${setIndex}.reps`)}
+                  {...register(`exercises.${index}.sets.${setIndex}.reps`, {
+                    required: true,
+                  })}
                 />
               </FormControl>
             </Td>

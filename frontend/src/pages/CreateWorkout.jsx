@@ -15,7 +15,9 @@ import {
   Tr,
   Th,
   TableContainer,
-  FormLabel,
+  FormErrorMessage,
+  Alert,
+  AlertIcon,
 } from "@chakra-ui/react";
 
 import { getExercises, createWorkoutDetail } from "../endpoints/api";
@@ -26,14 +28,6 @@ export default function CreateWorkout() {
   const [exerciseOptions, setExerciseOptions] = useState([]);
   const navigate = useNavigate();
 
-  function next() {
-    setCurrentStep((prevStep) => prevStep + 1);
-  }
-
-  function back() {
-    setCurrentStep((prevStep) => prevStep - 1);
-  }
-
   const form = useForm({
     defaultValues: {
       workout_type: "",
@@ -42,9 +36,19 @@ export default function CreateWorkout() {
         { name: "", sets: [{ set_number: "", weight: "", reps: "" }] },
       ],
     },
+    mode: "onBlur",
   });
-  const { register, handleSubmit, control, watch, getValues } = form;
+  const { register, handleSubmit, control, watch, getValues, formState } = form;
+  const { errors } = formState;
+  console.log(errors);
 
+  function next() {
+    setCurrentStep((prevStep) => prevStep + 1);
+  }
+
+  function back() {
+    setCurrentStep((prevStep) => prevStep - 1);
+  }
   const exercisesSelected = watch("exercises");
 
   // index represents exercises selected by the user (e.g. if Bicep Curls was first selected by the user, then it is at index 0...)
@@ -106,19 +110,40 @@ export default function CreateWorkout() {
   }, []);
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <Box margin="2em 40em 2em 40em">
+    <form onSubmit={handleSubmit(onSubmit)} noValidate>
+      <Box
+        margin="2em 40em 2em 40em"
+        display="flex"
+        flexDirection="column"
+        justifyContent="center"
+        alignItems="center"
+      >
         {currentStep === 0 && (
           <>
-            <FormControl>
+            <FormControl
+              isInvalid={errors.workout_type?.message}
+              marginBottom="1em"
+            >
               <Input
                 type="text"
-                placeholder="Workout Type"
-                {...register("workout_type")}
+                placeholder="Workout Name"
+                {...register("workout_type", {
+                  required: "Workout Name is required!",
+                })}
               />
+              <FormErrorMessage marginTop="0.5em">
+                {errors.workout_type?.message}
+              </FormErrorMessage>
             </FormControl>
-            <FormControl>
-              <Input type="date" placeholder="Date" {...register("date")} />
+            <FormControl isInvalid={errors.date?.message} marginBottom="1em">
+              <Input
+                type="date"
+                placeholder="Date"
+                {...register("date", { required: "Date is required!" })}
+              />
+              <FormErrorMessage marginTop="0.5em">
+                {errors.date?.message}
+              </FormErrorMessage>
             </FormControl>
             <Button onClick={next}>Next</Button>
           </>
@@ -128,10 +153,12 @@ export default function CreateWorkout() {
             <Controller
               control={control}
               name="exercises"
+              rules={{ required: "Please select exercises." }}
               render={({ field }) => (
-                <FormControl>
-                  <FormLabel>Exercises</FormLabel>
-
+                <FormControl
+                  isInvalid={errors.exercises?.message}
+                  marginBottom="1em"
+                >
                   <Select
                     isMulti
                     {...field}
@@ -141,6 +168,9 @@ export default function CreateWorkout() {
                     hideSelectedOptions={false}
                     selectedOptionColorScheme="blue"
                   />
+                  <FormErrorMessage marginTop="0.5em">
+                    {errors.exercises?.message}
+                  </FormErrorMessage>
                 </FormControl>
               )}
             />
