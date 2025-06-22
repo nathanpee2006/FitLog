@@ -32,8 +32,7 @@ export default function ExerciseSetField({
                 <Input
                   type="number"
                   {...register(
-                    `exercises.${index}.sets.${setIndex}.set_number`,
-                    { disabled: true }
+                    `exercises.${index}.sets.${setIndex}.set_number`
                   )}
                 />
               </FormControl>
