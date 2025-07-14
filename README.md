@@ -2,7 +2,7 @@
 
 A web application to track workouts, exercises, and fitness progress.
 
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-Visit%20Site-blue?style=for-the-badge&logo=vercel)](https://fit-log-xi.vercel.app)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Visit%20Site-blue?style=for-the-badge&logo=vercel)](fitlog-frontend.vercel.app)
 
 ## 🚀 Tech Stack
 
