@@ -1,10 +1,9 @@
 import axios from "axios";
 
 
-// for localhost development
-// const BASE_URL = 'http://127.0.0.1:8000/api/'
+const API_URL = 'https://fitlog-app-image.onrender.com/api/'
+const BASE_URL = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL : API_URL
 
-const BASE_URL = 'https://fit-log-backend.onrender.com/api/'
 const LOGIN_URL = `${BASE_URL}token/`
 const LOGOUT_URL = `${BASE_URL}logout/`
 const REFRESH_URL = `${BASE_URL}token/refresh/`
