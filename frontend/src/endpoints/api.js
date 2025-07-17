@@ -1,7 +1,6 @@
 import axios from "axios";
 
-
-const API_URL = 'https://fitlog-app-image.onrender.com/api/'
+const API_URL = 'https://fitlog-backend.onrender.com/api/'
 const BASE_URL = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL : API_URL
 
 const LOGIN_URL = `${BASE_URL}token/`
