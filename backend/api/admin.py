@@ -12,11 +12,18 @@ class ExerciseAdmin(admin.ModelAdmin):
 
 
 class WorkoutExerciseAdmin(admin.ModelAdmin):
-    list_display = ["id", "workout", "exercise"] 
+    list_display = ["id", "workout", "exercise"]
 
 
 class SetAdmin(admin.ModelAdmin):
-    list_display = ["id", "workout_exercise", "set_number", "reps", "weight", "duration"]
+    list_display = [
+        "id",
+        "workout_exercise",
+        "set_number",
+        "reps",
+        "weight",
+        "duration",
+    ]
 
 
 admin.site.register(Workout, WorkoutAdmin)

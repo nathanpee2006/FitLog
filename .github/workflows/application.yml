@@ -1,0 +1,90 @@
+name: Application workflow
+
+on:
+  workflow_run:
+    workflows: ["Terraform workflow"]
+    types:
+      - "completed"
+
+jobs:
+  test:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    env:
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5.5.0
+        with:
+          python-version: "3.13"
+
+      - name: Install dependencies
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Check Django version
+        run: |
+          source venv/bin/activate
+          python -m django --version
+
+      - name: Collect static files
+        run: |
+          source venv/bin/activate
+          python manage.py collectstatic --noinput
+
+      - name: Run Django tests
+        run: |
+          source venv/bin/activate
+          python manage.py test api
+
+      - name: Format code with Black
+        run: |
+          source venv/bin/activate
+          black .
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5.5.0
+        with:
+          python-version: "3.13"
+
+      - name: Install dependencies
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3.4.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.GHCR_USERNAME }}
+          password: ${{ secrets.GHCR_PAT }}
+
+      - name: Build Docker image
+        run: |
+          docker build -t ghcr.io/nathanpee2006/fitlog-backend .
+
+      - name: Push Docker image
+        run: |
+          docker push ghcr.io/nathanpee2006/fitlog-backend
+
+      - name: Re-deploy application on Render
+        run: |
+          echo "Initialising deploy hook..."
+          curl -X POST "${{ secrets.DEPLOY_HOOK_KEY }}"

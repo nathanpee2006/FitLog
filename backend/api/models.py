@@ -61,7 +61,9 @@ class WorkoutExercise(models.Model):
 
 
 class Set(models.Model):
-    workout_exercise = models.ForeignKey(WorkoutExercise, on_delete=models.CASCADE, related_name="sets")
+    workout_exercise = models.ForeignKey(
+        WorkoutExercise, on_delete=models.CASCADE, related_name="sets"
+    )
     set_number = models.PositiveIntegerField()
     reps = models.IntegerField()
     weight = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
