@@ -66,7 +66,7 @@ resource "render_web_service" "fitlog-backend" {
         SECRET_KEY = {value=var.SECRET_KEY}
     }
 
-    lifecycle = {
+    lifecycle {
       ignore_changes = [
         env_vars 
       ]
