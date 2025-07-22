@@ -16,8 +16,6 @@ import {
   Th,
   TableContainer,
   FormErrorMessage,
-  Alert,
-  AlertIcon,
 } from "@chakra-ui/react";
 
 import { getExercises, createWorkoutDetail } from "../endpoints/api";
@@ -40,7 +38,6 @@ export default function CreateWorkout() {
   });
   const { register, handleSubmit, control, watch, getValues, formState } = form;
   const { errors } = formState;
-  console.log(errors);
 
   function next() {
     setCurrentStep((prevStep) => prevStep + 1);

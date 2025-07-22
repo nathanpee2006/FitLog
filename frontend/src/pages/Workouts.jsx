@@ -1,6 +1,10 @@
 import {
+  Alert,
+  AlertIcon,
+  AlertTitle,
   Container,
   Center,
+  CloseButton,
   Heading,
   Text,
   Button,
@@ -10,6 +14,7 @@ import {
   CardBody,
   CardFooter,
   HStack,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -21,6 +26,7 @@ export default function Workouts() {
   const [workouts, setWorkouts] = useState([]);
   const navigate = useNavigate();
   const location = useLocation();
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   useEffect(() => {
     const fetchWorkouts = async () => {
@@ -38,22 +44,16 @@ export default function Workouts() {
     navigate("/workouts/create");
   }
 
-  function handleDeleteWorkout(workout_id) {
-    const deleteId = workout_id;
-    deleteWorkout(deleteId);
+  async function handleDeleteWorkout(workout_id) {
+    await deleteWorkout(workout_id);
     setWorkouts((prevWorkouts) =>
-      prevWorkouts.filter((workout) => workout.id !== deleteId)
+      prevWorkouts.filter((workout) => workout.id !== workout_id)
     );
+    onOpen();
   }
 
   const workoutList = workouts.map((workout) => (
-    <Card
-      direction={{ base: "column", sm: "row" }}
-      overflow="hidden"
-      backgroundColor="gray.100"
-      variant="outline"
-      key={workout.id}
-    >
+    <Card backgroundColor="gray.100" variant="outline" key={workout.id}>
       <Stack>
         <CardBody>
           <HStack
@@ -85,11 +85,30 @@ export default function Workouts() {
 
   return (
     <Container>
+      {location.state?.workoutCreated && (
+        <Alert status="success" justifyContent="space-between">
+          <AlertIcon />
+          <AlertTitle>Workout created!</AlertTitle>
+          <CloseButton
+            onClick={() => {
+              navigate("/workouts", { state: null });
+            }}
+          />
+        </Alert>
+      )}
+      {isOpen && (
+        <Alert status="error" justifyContent="space-between">
+          <AlertIcon />
+          <AlertTitle>Workout deleted!</AlertTitle>
+          <CloseButton onClick={onClose} />
+        </Alert>
+      )}
       <Center>
         <Button marginBlock={5} onClick={() => handleCreateWorkout()}>
           + Create Workout
         </Button>
       </Center>
+
       <SimpleGrid spacing={5}>{workoutList}</SimpleGrid>
     </Container>
   );
