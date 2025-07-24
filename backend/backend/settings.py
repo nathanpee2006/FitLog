@@ -30,9 +30,10 @@ SECRET_KEY = env("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ["fitlog-backend.onrender.com"]
+# ALLOWED_HOSTS = ["fitlog-backend.onrender.com"]
+ALLOWED_HOSTS = ["*"]
 
-CSRF_TRUSTED_ORIGINS = ["https://fitlog-backend.onrender.com"]
+# CSRF_TRUSTED_ORIGINS = ["https://fitlog-backend.onrender.com"]
 
 
 # Application definition
@@ -62,7 +63,8 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-CORS_ALLOWED_ORIGINS = ["https://fitlog-frontend.vercel.app"]
+# CORS_ALLOWED_ORIGINS = ["https://fitlog-frontend.vercel.app"]
+CORS_ALLOWED_ORIGINS = ["http://localhost:5173"]
 
 CORS_ALLOW_CREDENTIALS = True
 
@@ -106,20 +108,20 @@ DATABASES = {
 
 # Production Database (PostgreSQL)
 
-DB_NAME = env("DB_NAME", default=None)
+# DB_NAME = env("DB_NAME", default=None)
 
-if DB_NAME:
+# if DB_NAME:
 
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": env("DB_NAME", default=''),
-            "USER": env("DB_USER", default=''),
-            "PASSWORD": env("DB_PASSWORD", default=''),
-            "HOST": env("DB_HOST", default=''),
-            "PORT": env("DB_PORT", default=''),
-        }
-    }
+#     DATABASES = {
+#         "default": {
+#             "ENGINE": "django.db.backends.postgresql",
+#             "NAME": env("DB_NAME", default=''),
+#             "USER": env("DB_USER", default=''),
+#             "PASSWORD": env("DB_PASSWORD", default=''),
+#             "HOST": env("DB_HOST", default=''),
+#             "PORT": env("DB_PORT", default=''),
+#         }
+#     }
 
 
 # Cache

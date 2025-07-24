@@ -4,7 +4,7 @@ from .models import Workout, Exercise, WorkoutExercise, Set
 
 
 class WorkoutAdmin(admin.ModelAdmin):
-    list_display = ["id", "user", "workout_type", "date"]
+    list_display = ["id", "user", "workout_type", "date", "is_finished"]
 
 
 class ExerciseAdmin(admin.ModelAdmin):

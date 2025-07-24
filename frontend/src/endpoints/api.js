@@ -64,9 +64,10 @@ export const refreshToken = async () => {
  * calls the `callRefresh` function with the error and a callback function that retries the axios GET
  * request to the `WORKOUTS_URL`.
  */
-export const getWorkouts = async () => {
+export const getWorkouts = async (params) => {
     try {
         const response = await axios.get(WORKOUTS_URL, {
+            params: params,
             withCredentials: true
         })
         return response.data
@@ -162,6 +163,31 @@ export const deleteWorkout = async (workout_id) => {
         return response.data
     } catch (error) {
         return callRefresh(error, () => axios.delete(`${BASE_URL}workouts/${workout_id}/`, {
+            withCredentials: true
+        }))
+    }
+}
+
+
+/**
+ * The `finishWorkout` function sends a PATCH request to mark a workout as finished using Axios with
+ * error handling that includes a call to refresh the access token if needed.
+ * @param workout_id - The `finishWorkout` function is an asynchronous function that updates a
+ * workout's `is_finished` status to true. It uses Axios to send a PATCH request to the specified
+ * workout endpoint with the workout ID provided as a parameter.
+ * @returns The `finishWorkout` function is returning the data from the response of the PATCH request
+ * made to the specified workout endpoint with the `is_finished` field set to true. If there is an
+ * error during the request, it will call the `callRefresh` function passing the error and retry the
+ * PATCH request.
+ */
+export const finishWorkout = async (workout_id) => {
+    try {
+        const response = await axios.patch(`${BASE_URL}workouts/${workout_id}/`, { is_finished: true }, {
+            withCredentials: true
+        })
+        return response.data
+    } catch (error) {
+        return callRefresh(error, () => axios.patch(`${BASE_URL}workouts/${workout_id}/`, { is_finished: true }, {
             withCredentials: true
         }))
     }

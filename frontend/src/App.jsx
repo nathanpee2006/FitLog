@@ -10,6 +10,7 @@ import AuthProvider from "./contexts/useAuth";
 import Header from "./components/Header";
 import WorkoutDetail from "./pages/WorkoutDetail";
 import CreateWorkout from "./pages/CreateWorkout";
+import FinishedWorkouts from "./pages/FinishedWorkouts";
 
 function App() {
   return (
@@ -41,6 +42,14 @@ function App() {
             element={
               <PrivateRoute>
                 <WorkoutDetail />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/finished-workouts"
+            element={
+              <PrivateRoute>
+                <FinishedWorkouts />
               </PrivateRoute>
             }
           />

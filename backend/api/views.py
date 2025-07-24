@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -126,7 +127,10 @@ def workout_list(request):
 
     # List workouts
     if request.method == "GET":
-        workouts = Workout.objects.filter(user_id=request.user.id)
+        is_finished = False 
+        if request.query_params.get("is_finished"):
+            is_finished = True
+        workouts = Workout.objects.filter(user_id=request.user.id, is_finished=is_finished)
         serializer = WorkoutSerializer(workouts, many=True)
         return Response(serializer.data)
 
@@ -141,7 +145,7 @@ def workout_list(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(["GET", "PUT", "DELETE"])
+@api_view(["GET", "PUT", "DELETE", "PATCH"])
 @permission_classes([IsAuthenticated])
 def workout_detail(request, workout_id):
 
@@ -171,6 +175,14 @@ def workout_detail(request, workout_id):
         return Response(
             {"success": "Workout deleted!"}, status=status.HTTP_204_NO_CONTENT
         )
+
+    # Finish workout
+    if request.method == "PATCH":
+        workout = get_object_or_404(Workout, id=workout_id, user=request.user) 
+        workout.is_finished = True
+        workout.save()
+        serializer = WorkoutSerializer(workout)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 # @cache_page(60 * 15)

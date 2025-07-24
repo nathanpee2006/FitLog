@@ -6,6 +6,7 @@ class Workout(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="workouts")
     workout_type = models.CharField(max_length=100)
     date = models.DateField()
+    is_finished = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.user}'s workout: {self.workout_type}"

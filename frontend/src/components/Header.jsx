@@ -4,7 +4,6 @@ import {
   Container,
   Flex,
   Heading,
-  Text,
   useColorModeValue,
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
@@ -44,7 +43,15 @@ export default function Header() {
                   variant="ghost"
                   colorScheme="blue"
                 >
-                  Workouts
+                  Upcoming Workouts
+                </Button>
+                <Button
+                  as={RouterLink}
+                  to="/finished-workouts"
+                  variant="ghost"
+                  colorScheme="blue"
+                >
+                  Finished Workouts
                 </Button>
                 <Button
                   onClick={handleLogout}

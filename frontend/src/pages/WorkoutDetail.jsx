@@ -20,11 +20,15 @@ import {
 } from "@chakra-ui/react";
 import { useEffect, useState, useRef } from "react";
 import { useForm } from "react-hook-form";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Stopwatch from "../components/Stopwatch";
 import ExerciseSetField from "../components/ExerciseSetField";
 
-import { getWorkoutDetail, updateWorkout } from "../endpoints/api";
+import {
+  getWorkoutDetail,
+  updateWorkout,
+  finishWorkout,
+} from "../endpoints/api";
 
 export default function WorkoutDetail() {
   const [isEditing, setIsEditing] = useState(false);
@@ -36,6 +40,8 @@ export default function WorkoutDetail() {
   const intervalIdRef = useRef(null);
   const startTimeRef = useRef(0);
   const { id } = useParams();
+  const navigate = useNavigate();
+  console.log(exercises);
 
   const setCount = exercises.reduce(
     (total, exercise) => total + exercise.sets.length,
@@ -86,6 +92,11 @@ export default function WorkoutDetail() {
     return `${minutes}:${seconds}:${milliseconds}`;
   }
 
+  async function handleFinishedWorkout(workout_id) {
+    await finishWorkout(workout_id);
+    navigate("/workouts");
+  }
+
   useEffect(() => {
     if (isRunning) {
       intervalIdRef.current = setInterval(() => {
@@ -125,6 +136,16 @@ export default function WorkoutDetail() {
           startTimeRef={startTimeRef}
           intervalIdRef={intervalIdRef}
         />
+        <Spacer />
+        <Button
+          marginTop="2em"
+          marginRight="2em"
+          variant="ghost"
+          colorScheme="blue"
+          onClick={() => handleFinishedWorkout(id)}
+        >
+          Finish
+        </Button>
       </Flex>
 
       {exercises.map((exercise) => (
@@ -271,6 +292,51 @@ export default function WorkoutDetail() {
     </form>
   );
 
+  const viewFinishedWorkoutExercises = (
+    <>
+      {exercises.map((exercise) => (
+        <Box
+          key={exercise.id}
+          marginTop="1em"
+          marginLeft="5em"
+          marginRight="5em"
+          marginBottom="2em"
+        >
+          <Heading>{exercise.exercise.name}</Heading>
+          <Tag>{exercise.exercise.muscle_group}</Tag>
+          {exercise.exercise.equipment && (
+            <Tag>{exercise.exercise.equipment}</Tag>
+          )}
+          <TableContainer>
+            <Table variant="simple">
+              <Thead>
+                <Tr>
+                  <Th>Set</Th>
+                  <Th isNumeric>kg</Th>
+                  <Th isNumeric>Reps</Th>
+                </Tr>
+              </Thead>
+              <Tbody>
+                {exercise.sets.map((set) => (
+                  <Tr
+                    key={set.id}
+                    backgroundColor={
+                      completedSets.has(set.id) ? "green.100" : ""
+                    }
+                  >
+                    <Td>{set.set_number}</Td>
+                    <Td isNumeric>{set.weight}</Td>
+                    <Td isNumeric>{set.reps}</Td>
+                  </Tr>
+                ))}
+              </Tbody>
+            </Table>
+          </TableContainer>
+        </Box>
+      ))}
+    </>
+  );
+
   useEffect(() => {
     const fetchWorkout = async () => {
       const exercises = await getWorkoutDetail(id);
@@ -281,5 +347,13 @@ export default function WorkoutDetail() {
     }
   }, [id, isEditing]);
 
-  return <>{isEditing ? editWorkoutExercises : viewWorkoutExercises}</>;
+  let isFinished = exercises[0]?.workout?.is_finished;
+
+  if (isFinished) {
+    return viewFinishedWorkoutExercises;
+  } else if (isEditing && !isFinished) {
+    return editWorkoutExercises;
+  } else {
+    return viewWorkoutExercises;
+  }
 }
