@@ -19,7 +19,6 @@ import { useNavigate } from "react-router-dom";
 export default function FinishedWorkouts() {
   const [workouts, setWorkouts] = useState([]);
   const navigate = useNavigate();
-  console.log(workouts);
 
   function viewWorkoutDetail(workout_id) {
     navigate(`/workouts/${workout_id}`);
@@ -30,12 +29,14 @@ export default function FinishedWorkouts() {
       <Stack>
         <CardBody>
           <HStack
-            display="flex"
-            justifyContent="space-between"
-            alignItems="center"
+            justify="space-between"
+            width="100%"
+            spacing="4"
+            flexDirection={{ base: "column", md: "row" }}
+            alignItems={{ base: "flex-start", md: "center" }}
           >
             <Heading size="md">{workout.workout_type}</Heading>
-            <Alert status="success">
+            <Alert width="1.75em" padding="0" status="success">
               <AlertIcon />
             </Alert>
           </HStack>

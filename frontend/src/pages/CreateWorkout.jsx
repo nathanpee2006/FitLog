@@ -9,13 +9,19 @@ import {
   FormControl,
   Input,
   Button,
-  ButtonGroup,
   Table,
   Thead,
   Tr,
   Th,
   TableContainer,
   FormErrorMessage,
+  Progress,
+  VStack,
+  HStack,
+  Text,
+  useBreakpointValue,
+  Container,
+  Flex,
 } from "@chakra-ui/react";
 
 import { getExercises, createWorkoutDetail } from "../endpoints/api";
@@ -25,6 +31,8 @@ export default function CreateWorkout() {
   const [currentStep, setCurrentStep] = useState(0);
   const [exerciseOptions, setExerciseOptions] = useState([]);
   const navigate = useNavigate();
+  const isMobile = useBreakpointValue({ base: true, md: false });
+  const totalSteps = 3;
 
   const form = useForm({
     defaultValues: {
@@ -38,6 +46,12 @@ export default function CreateWorkout() {
   });
   const { register, handleSubmit, control, watch, getValues, formState } = form;
   const { errors } = formState;
+
+  const steps = [
+    { title: "Workout Details", description: "Basic information" },
+    { title: "Select Exercises", description: "Choose your exercises" },
+    { title: "Enter Sets", description: "Add your sets and reps" },
+  ];
 
   function next() {
     setCurrentStep((prevStep) => prevStep + 1);
@@ -107,86 +121,150 @@ export default function CreateWorkout() {
   }, []);
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} noValidate>
-      <Box
-        margin="2em 40em 2em 40em"
-        display="flex"
-        flexDirection="column"
-        justifyContent="center"
-        alignItems="center"
-      >
-        {currentStep === 0 && (
-          <>
-            <FormControl
-              isInvalid={errors.workout_type?.message}
-              marginBottom="1em"
-            >
-              <Input
-                type="text"
-                placeholder="Workout Name"
-                {...register("workout_type", {
-                  required: "Workout Name is required!",
-                })}
+    <Container maxW="container.lg" py={8} px={4}>
+      <VStack spacing={8} w="100%">
+        <Box w="100%">
+          <Progress
+            value={((currentStep + 1) / totalSteps) * 100}
+            size="sm"
+            colorScheme="blue"
+            mb={4}
+            borderRadius="full"
+          />
+          <HStack
+            justify="space-between"
+            textAlign="center"
+            fontSize={{ base: "sm", md: "md" }}
+            mb={8}
+          >
+            {steps.map((step, index) => (
+              <Box
+                key={index}
+                flex={1}
+                color={currentStep >= index ? "blue.500" : "gray.400"}
+                fontWeight={currentStep === index ? "bold" : "normal"}
+              >
+                <Text fontSize="xs" mb={1}>
+                  Step {index + 1}
+                </Text>
+                <Text>{step.title}</Text>
+              </Box>
+            ))}
+          </HStack>
+        </Box>
+
+        <Box
+          as="form"
+          onSubmit={handleSubmit(onSubmit)}
+          noValidate
+          w="100%"
+          maxW="container.md"
+          mx="auto"
+        >
+          {currentStep === 0 && (
+            <VStack spacing={6} w="100%">
+              <Heading size="lg" mb={4}>
+                Workout Details
+              </Heading>
+              <FormControl isInvalid={errors.workout_type?.message}>
+                <Input
+                  type="text"
+                  placeholder="Workout Name"
+                  size="lg"
+                  {...register("workout_type", {
+                    required: "Workout Name is required!",
+                  })}
+                />
+                <FormErrorMessage>
+                  {errors.workout_type?.message}
+                </FormErrorMessage>
+              </FormControl>
+              <FormControl isInvalid={errors.date?.message}>
+                <Input
+                  type="date"
+                  placeholder="Date"
+                  size="lg"
+                  {...register("date", { required: "Date is required!" })}
+                />
+                <FormErrorMessage>{errors.date?.message}</FormErrorMessage>
+              </FormControl>
+            </VStack>
+          )}
+
+          {currentStep === 1 && (
+            <VStack spacing={6} w="100%">
+              <Heading size="lg" mb={4}>
+                Select Exercises
+              </Heading>
+              <Controller
+                control={control}
+                name="exercises"
+                rules={{ required: "Please select at least one exercise." }}
+                render={({ field }) => (
+                  <FormControl isInvalid={errors.exercises?.message} w="100%">
+                    <Select
+                      isMulti
+                      {...field}
+                      placeholder="Search and select exercises"
+                      options={exerciseOptions}
+                      closeMenuOnSelect={false}
+                      hideSelectedOptions={false}
+                      selectedOptionColorScheme="blue"
+                      size="lg"
+                    />
+                    <FormErrorMessage>
+                      {errors.exercises?.message}
+                    </FormErrorMessage>
+                  </FormControl>
+                )}
               />
-              <FormErrorMessage marginTop="0.5em">
-                {errors.workout_type?.message}
-              </FormErrorMessage>
-            </FormControl>
-            <FormControl isInvalid={errors.date?.message} marginBottom="1em">
-              <Input
-                type="date"
-                placeholder="Date"
-                {...register("date", { required: "Date is required!" })}
-              />
-              <FormErrorMessage marginTop="0.5em">
-                {errors.date?.message}
-              </FormErrorMessage>
-            </FormControl>
-            <Button onClick={next}>Next</Button>
-          </>
-        )}
-        {currentStep === 1 && (
-          <>
-            <Controller
-              control={control}
-              name="exercises"
-              rules={{ required: "Please select exercises." }}
-              render={({ field }) => (
-                <FormControl
-                  isInvalid={errors.exercises?.message}
-                  marginBottom="1em"
-                >
-                  <Select
-                    isMulti
-                    {...field}
-                    placeholder="Select exercises"
-                    options={exerciseOptions}
-                    closeMenuOnSelect={false}
-                    hideSelectedOptions={false}
-                    selectedOptionColorScheme="blue"
-                  />
-                  <FormErrorMessage marginTop="0.5em">
-                    {errors.exercises?.message}
-                  </FormErrorMessage>
-                </FormControl>
-              )}
-            />
-            <ButtonGroup>
-              <Button onClick={back}>Back</Button>
-              <Button onClick={next}>Next</Button>
-            </ButtonGroup>
-          </>
-        )}
-      </Box>
-      {currentStep === 2 && (
-        <>
-          {exerciseData}
-          <ButtonGroup margin="2em" spacing="3">
-            <Button onClick={back}>Back</Button>
-            <Button type="submit">Create</Button>
-          </ButtonGroup>
-        </>
-      )}
-    </form>
+            </VStack>
+          )}
+
+          {currentStep === 2 && (
+            <VStack spacing={6} w="100%">
+              <Heading size="lg" mb={4}>
+                Enter Your Sets
+              </Heading>
+              {exerciseData}
+            </VStack>
+          )}
+
+          <Flex
+            mt={12}
+            justifyContent={currentStep === 0 ? "flex-end" : "space-between"}
+            w="100%"
+          >
+            {currentStep > 0 && (
+              <Button
+                onClick={back}
+                variant="outline"
+                size={isMobile ? "md" : "lg"}
+              >
+                Back
+              </Button>
+            )}
+            {currentStep < totalSteps - 1 ? (
+              <Button
+                onClick={next}
+                colorScheme="blue"
+                ml={currentStep === 0 ? "auto" : 0}
+                size={isMobile ? "md" : "lg"}
+              >
+                Next
+              </Button>
+            ) : (
+              <Button
+                type="submit"
+                colorScheme="green"
+                size={isMobile ? "md" : "lg"}
+              >
+                Create Workout
+              </Button>
+            )}
+          </Flex>
+        </Box>
+      </VStack>
+    </Container>
   );
 }

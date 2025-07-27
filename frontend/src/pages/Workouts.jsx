@@ -76,7 +76,7 @@ export default function Workouts() {
             colorScheme="blue"
             onClick={() => viewWorkoutDetail(workout.id)}
           >
-            View Workout
+            View
           </Button>
         </CardFooter>
       </Stack>

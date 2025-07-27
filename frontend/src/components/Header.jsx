@@ -4,74 +4,128 @@ import {
   Container,
   Flex,
   Heading,
-  useColorModeValue,
+  IconButton,
+  Tooltip,
 } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/useAuth";
+import { FiLogOut, FiCalendar, FiCheckCircle } from "react-icons/fi";
 
 export default function Header() {
   const { isAuthenticated, logoutUser } = useAuth();
-  const bgColor = useColorModeValue("white", "gray.800");
+  const location = useLocation();
+  const activeBg = "blue.50";
+  const activeColor = "blue.600";
 
   const handleLogout = async () => {
     await logoutUser();
   };
 
+  const NavButton = ({ to, icon, label, exact = false }) => {
+    const isActive = exact
+      ? location.pathname === to
+      : location.pathname.startsWith(to);
+
+    return (
+      <Tooltip label={label} placement="bottom">
+        <Button
+          as={RouterLink}
+          to={to}
+          variant="ghost"
+          size="sm"
+          px={3}
+          h={8}
+          color={isActive ? activeColor : "currentColor"}
+          bg={isActive ? activeBg : "transparent"}
+          _hover={{
+            bg: isActive ? activeBg : "gray.100",
+          }}
+          leftIcon={icon}
+          justifyContent="flex-start"
+          fontWeight="medium"
+        >
+          {label}
+        </Button>
+      </Tooltip>
+    );
+  };
+
   return (
     <Box
       as="nav"
-      bg={bgColor}
-      boxShadow="sm"
-      py={4}
+      bg="white"
+      borderBottom="1px"
+      borderColor="gray.200"
+      py={2}
       position="sticky"
       top={0}
       zIndex={10}
     >
-      <Container maxW="container.lg">
+      <Container maxW="container.xl" px={4}>
         <Flex justify="space-between" align="center">
-          <Heading as="h1" size="lg" color="blue.500">
-            <RouterLink to={isAuthenticated ? "/workouts" : "/"}>
-              FitLog
-            </RouterLink>
-          </Heading>
-          <Flex gap={4} align="center">
-            {isAuthenticated ? (
-              <>
-                <Button
-                  as={RouterLink}
+          <Flex align="center" gap={6}>
+            <Heading
+              as="h1"
+              size="md"
+              color="blue.500"
+              fontWeight="bold"
+              letterSpacing="-0.5px"
+              mr={6}
+            >
+              <RouterLink to={isAuthenticated ? "/workouts" : "/"}>
+                FitLog
+              </RouterLink>
+            </Heading>
+
+            {isAuthenticated && (
+              <Flex gap={1}>
+                <NavButton
                   to="/workouts"
-                  variant="ghost"
-                  colorScheme="blue"
-                >
-                  Upcoming Workouts
-                </Button>
-                <Button
-                  as={RouterLink}
+                  icon={<FiCalendar size={16} />}
+                  label="Upcoming"
+                  exact
+                />
+                <NavButton
                   to="/finished-workouts"
-                  variant="ghost"
-                  colorScheme="blue"
-                >
-                  Finished Workouts
-                </Button>
-                <Button
+                  icon={<FiCheckCircle size={16} />}
+                  label="Completed"
+                  exact
+                />
+              </Flex>
+            )}
+          </Flex>
+
+          <Flex align="center" gap={2}>
+            {isAuthenticated ? (
+              <Tooltip label="Logout">
+                <IconButton
+                  aria-label="Logout"
+                  icon={<FiLogOut />}
                   onClick={handleLogout}
-                  variant="outline"
-                  colorScheme="blue"
-                >
-                  Logout
-                </Button>
-              </>
+                  variant="ghost"
+                  size="sm"
+                  fontSize="lg"
+                  isRound
+                />
+              </Tooltip>
             ) : (
               <>
                 <Button
                   as={RouterLink}
                   to="/login"
                   variant="ghost"
+                  size="sm"
                   colorScheme="blue"
                 >
                   Log In
                 </Button>
-                <Button as={RouterLink} to="/register" colorScheme="blue">
+                <Button
+                  as={RouterLink}
+                  to="/register"
+                  colorScheme="blue"
+                  size="sm"
+                  variant="solid"
+                >
                   Sign Up
                 </Button>
               </>
