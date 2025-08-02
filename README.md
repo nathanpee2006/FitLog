@@ -22,5 +22,5 @@ A web application to track workouts, exercises, and fitness progress.
 
 - User authentication (Register/Login/Logout)
 - Create and manage workouts
-- Track exercise progress (T.B.D.)
-- View workout history (T.B.D.)
+- View finished workouts 
+- Track exercise progress through charts (T.B.D.)
