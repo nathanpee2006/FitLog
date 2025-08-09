@@ -10,6 +10,7 @@ import {
 import { Link as RouterLink, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/useAuth";
 import { FiLogOut, FiCalendar, FiCheckCircle } from "react-icons/fi";
+import { BsGraphUp } from "react-icons/bs";
 
 export default function Header() {
   const { isAuthenticated, logoutUser } = useAuth();
@@ -89,6 +90,12 @@ export default function Header() {
                   to="/finished-workouts"
                   icon={<FiCheckCircle size={16} />}
                   label="Completed"
+                  exact
+                />
+                <NavButton
+                  to="/statistics"
+                  icon={<BsGraphUp size={16} />}
+                  label="Statistics"
                   exact
                 />
               </Flex>

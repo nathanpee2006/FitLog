@@ -11,6 +11,7 @@ const WORKOUTS_URL = `${BASE_URL}workouts/`
 const EXERCISES_URL = `${BASE_URL}exercises/`
 const AUTH_URL = `${BASE_URL}authenticated/`
 const REGISTER_URL = `${BASE_URL}register/`
+const WORKOUT_STATISTICS_URL = `${BASE_URL}workout_statistics/`
 
 
 /**
@@ -305,6 +306,17 @@ export const register = async (username, email, password) => {
             email: email,
             password: password
         },
+        { withCredentials: true }
+    )
+    return response.data
+}
+
+/**
+ * The `workoutStatistics` function sends a GET request to a specified URL and returns the response data.
+ * @returns The `workoutStatistics` function is returning the data from the response of the GET request made to the WORKOUT_STATISTICS_URL.
+ */
+export const getWorkoutStatistics = async () => {
+    const response = await axios.get(WORKOUT_STATISTICS_URL,
         { withCredentials: true }
     )
     return response.data

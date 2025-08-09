@@ -1,6 +1,8 @@
 import { useFieldArray } from "react-hook-form";
 import { useEffect } from "react";
 import { FormControl, Input, Tbody, Tr, Td, Button } from "@chakra-ui/react";
+import { FaDeleteLeft } from "react-icons/fa6";
+import { IoMdAdd } from "react-icons/io";
 
 export default function ExerciseSetField({
   control,
@@ -8,6 +10,7 @@ export default function ExerciseSetField({
   index,
   initialValues,
   getValues,
+  errors,
 }) {
   const { fields, replace, append, remove } = useFieldArray({
     control,
@@ -28,18 +31,29 @@ export default function ExerciseSetField({
         {fields.map((field, setIndex) => (
           <Tr key={field.id}>
             <Td>
-              <FormControl>
+              <FormControl
+                isInvalid={
+                  errors?.exercises?.[index]?.sets?.[setIndex]?.set_number?.type
+                }
+              >
                 <Input
                   type="number"
                   {...register(
-                    `exercises.${index}.sets.${setIndex}.set_number`
+                    `exercises.${index}.sets.${setIndex}.set_number`,
+                    {
+                      required: true,
+                    }
                   )}
                 />
               </FormControl>
             </Td>
             <Td>None</Td>
             <Td>
-              <FormControl>
+              <FormControl
+                isInvalid={
+                  errors?.exercises?.[index]?.sets?.[setIndex]?.weight?.type
+                }
+              >
                 <Input
                   type="number"
                   step="0.01"
@@ -50,7 +64,11 @@ export default function ExerciseSetField({
               </FormControl>
             </Td>
             <Td>
-              <FormControl>
+              <FormControl
+                isInvalid={
+                  errors?.exercises?.[index]?.sets?.[setIndex]?.reps?.type
+                }
+              >
                 <Input
                   type="number"
                   {...register(`exercises.${index}.sets.${setIndex}.reps`, {
@@ -61,11 +79,11 @@ export default function ExerciseSetField({
             </Td>
             <Td>
               <Button
-                backgroundColor="red.200"
                 type="button"
+                variant="ghost"
                 onClick={() => remove(setIndex)}
               >
-                Remove
+                <FaDeleteLeft size="1.25em" color="red" />
               </Button>
             </Td>
           </Tr>
@@ -82,7 +100,7 @@ export default function ExerciseSetField({
                 });
               }}
             >
-              + Add Set
+              <IoMdAdd size="1.25em" />
             </Button>
           </Td>
         </Tr>

@@ -11,6 +11,7 @@ import Header from "./components/Header";
 import WorkoutDetail from "./pages/WorkoutDetail";
 import CreateWorkout from "./pages/CreateWorkout";
 import FinishedWorkouts from "./pages/FinishedWorkouts";
+import Statistics from "./pages/Statistics";
 
 function App() {
   return (
@@ -50,6 +51,14 @@ function App() {
             element={
               <PrivateRoute>
                 <FinishedWorkouts />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/statistics"
+            element={
+              <PrivateRoute>
+                <Statistics />
               </PrivateRoute>
             }
           />

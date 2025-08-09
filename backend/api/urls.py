@@ -19,4 +19,5 @@ urlpatterns = [
     path("api/authenticated/", views.is_authenticated),
     path("api/register/", views.register),
     path("api/exercises/", views.exercise_list),
+    path("api/workout_statistics/", views.workout_statistics),
 ]

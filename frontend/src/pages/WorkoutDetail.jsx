@@ -41,7 +41,6 @@ export default function WorkoutDetail() {
   const startTimeRef = useRef(0);
   const { id } = useParams();
   const navigate = useNavigate();
-  console.log(exercises);
 
   const setCount = exercises.reduce(
     (total, exercise) => total + exercise.sets.length,

@@ -23,7 +23,6 @@ import {
   Container,
   Flex,
 } from "@chakra-ui/react";
-
 import { getExercises, createWorkoutDetail } from "../endpoints/api";
 import ExerciseSetField from "../components/ExerciseSetField";
 
@@ -38,13 +37,19 @@ export default function CreateWorkout() {
     defaultValues: {
       workout_type: "",
       date: "",
-      exercises: [
-        { name: "", sets: [{ set_number: "", weight: "", reps: "" }] },
-      ],
+      exercises: [],
     },
     mode: "onBlur",
   });
-  const { register, handleSubmit, control, watch, getValues, formState } = form;
+  const {
+    register,
+    handleSubmit,
+    control,
+    watch,
+    getValues,
+    formState,
+    trigger,
+  } = form;
   const { errors } = formState;
 
   const steps = [
@@ -53,8 +58,10 @@ export default function CreateWorkout() {
     { title: "Enter Sets", description: "Add your sets and reps" },
   ];
 
-  function next() {
-    setCurrentStep((prevStep) => prevStep + 1);
+  async function next() {
+    const isValid = await trigger();
+    // if none of the fields are empty on the current step, then proceed to the next step
+    if (isValid) setCurrentStep((prevStep) => prevStep + 1);
   }
 
   function back() {
@@ -88,6 +95,7 @@ export default function CreateWorkout() {
               register={register}
               index={index}
               getValues={getValues}
+              errors={errors}
             />
           </Table>
         </TableContainer>

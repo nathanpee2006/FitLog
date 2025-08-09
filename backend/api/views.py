@@ -1,3 +1,4 @@
+from collections import defaultdict
 from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
@@ -5,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
-from .models import Workout, Exercise, WorkoutExercise
+from .models import Workout, Exercise, WorkoutExercise, Set
 from .serializers import (
     UserRegistrationSerializer,
     WorkoutSerializer,
@@ -196,3 +197,32 @@ def exercise_list(request):
         exercises = Exercise.objects.all()
         serializer = ExerciseSerializer(exercises, many=True)
         return Response(serializer.data)
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def workout_statistics(request):
+
+    # Get all sets with workout dates in one query
+    sets_with_dates = Set.objects.filter(
+        workout_exercise__workout__user=request.user,
+        workout_exercise__workout__is_finished=True
+    ).select_related(
+        'workout_exercise__workout'
+    ).values(
+        'workout_exercise__workout__date',
+        'reps',
+        'weight'
+    )
+    
+    monthly_volume = defaultdict(float)
+    
+    for item in sets_with_dates:
+        month_key = item['workout_exercise__workout__date'].strftime('%Y-%m')
+        weight = item['weight'] or 0
+        volume = item['reps'] * float(weight)
+        monthly_volume[month_key] += volume
+    
+    # Convert to regular dict and sort
+    result = dict(sorted(monthly_volume.items()))
+    return Response(result, status=status.HTTP_200_OK)
