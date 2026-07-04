@@ -12,7 +12,7 @@ Before when trying to do a workout, I used my own phone's notes app to record my
 
 Used a split frontend/backend architecture. The app is a React SPA backed by a Django REST API. This keeps UI and business logic separate.
 
-Use HTTP-only JWT cookies instead of storing tokens in browser storage. Login and refresh set cookies server-side, and the client always sends requests with credentials. This reduces token exposure in the browser.
+Used HTTP-only JWT cookies instead of storing tokens in browser storage. Login and refresh set cookies server-side, and the client always sends requests with credentials. This reduces token exposure in the browser.
 
 Kept computation on the server-side. Data is aggregated in the backend and only chart-ready data is sent to the frontend. That reduces client complexity and keeps business rules in one place.
 
@@ -43,7 +43,7 @@ It turned out that the ***authenticated()*** function was not throwing an error 
 ## What would I change?
 
 In this project, I used Django Simple JWT library which is a authentication plugin for the Django REST framework.
-I would have probably used a battle-tested managed auth provider like Clerk. It would have allowed me to spend less time on the security logic (JWT token handling, hashing) and focus on the features of app more. The reason why I went for the library was because  was trying to understand the internals of how JWT auth actually worked.
+I would have probably used a battle-tested managed auth provider like Clerk. It would have allowed me to spend less time on the security logic (JWT token handling, hashing) and focus on the features of app more. The reason why I went for the library was because I was trying to understand the internals of how JWT auth actually worked.
 
 ##  Tech Stack
 
